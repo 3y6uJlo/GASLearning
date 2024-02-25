@@ -2,8 +2,12 @@
 
 
 #include "AuraPlayerController.h"
+
+#include "AbilitySystemComponent.h"
+#include "AuraPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Aura/Character/AuraCharacter.h"
 #include "Aura/Interact/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
