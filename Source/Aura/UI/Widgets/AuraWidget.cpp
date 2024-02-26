@@ -3,3 +3,8 @@
 
 #include "AuraWidget.h"
 
+void UAuraWidget::SetWidgetController(UAuraWidgetController* AuraWidgetController)
+{
+	WidgetController = AuraWidgetController;
+	OnSetWidgetController();
+}
