@@ -19,7 +19,11 @@ public:
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
 
+	virtual int32 GetCharacterLevel() override { return CharacterLevel; }
 protected:
 
+	virtual void InitAbilityActorInfo() override;
 	virtual void BeginPlay() override;
+
+	int32 CharacterLevel = 1.f;
 };

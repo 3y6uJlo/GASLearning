@@ -19,9 +19,12 @@ class AURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInte
 public:
 	AAuraPlayerState();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	int32 GetCharacterLevel() const { return CharacterLevel; }
 	
 protected:
 
@@ -30,4 +33,10 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_CharacterLevel)
+	int32 CharacterLevel = 1.f;
+
+	UFUNCTION()
+	void OnRep_CharacterLevel();
 };

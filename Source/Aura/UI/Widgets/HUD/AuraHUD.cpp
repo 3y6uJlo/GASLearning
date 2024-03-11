@@ -24,7 +24,7 @@ UAuraWidgetController* AAuraHUD::GetWidgetController(APlayerController* PC, APla
 {
 	if (!AuraWidgetController)
 	{
-		AuraWidgetController = NewObject<UAuraWidgetController>(this, UAuraWidgetController::StaticClass());
+		AuraWidgetController = NewObject<UAuraWidgetController>(this, AuraWidgetControllerClass);
 		AuraWidgetController->InitParams(PC, PS, ASC, AS);
 
 		AuraWidgetController->BindAttributesChangesCallbacks();

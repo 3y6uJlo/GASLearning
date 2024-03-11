@@ -23,6 +23,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAuraWidget> AuraHUDWidgetClass;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAuraWidgetController> AuraWidgetControllerClass;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAuraWidget> AuraHUDWidget;

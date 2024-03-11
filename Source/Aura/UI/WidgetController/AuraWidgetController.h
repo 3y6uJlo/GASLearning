@@ -3,19 +3,39 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "Aura/UI/Widgets/AuraWidget.h"
+#include "Engine/DataTable.h"
 #include "UObject/NoExportTypes.h"
 #include "AuraWidgetController.generated.h"
 
+class UAuraAttributeSet;
 struct FOnAttributeChangeData;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangeSignature, float, NewHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangeSignature, float, NewMaxHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangeSignature, float, NewMana);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangeSignature, float, NewMaxMana);
+USTRUCT(BlueprintType)
+struct FUIWidgetRow : public FTableRowBase
+{
+	GENERATED_BODY()
 
-UCLASS()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag MessageTag = FGameplayTag();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText Message = FText();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UTexture2D> Image = nullptr;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMessageSignature, const FUIWidgetRow&, MessageRow);
+
+
+
+UCLASS(BlueprintType, Blueprintable)
 class AURA_API UAuraWidgetController : public UObject
 {
 	GENERATED_BODY()
@@ -27,25 +47,81 @@ public:
 	void BroadcastInitValues();
 
 	void BindAttributesChangesCallbacks();
+
+	void BindPrimaryAttributesCallbacks(UAuraAttributeSet* AuraAttributeSet);
+	void BindSecondaryAttributesCallbacks(UAuraAttributeSet* AuraAttributeSet);
+	
 	
 protected:
+
+	template <typename T>
+	T* GetTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
 	
-	void HealthChanged(const FOnAttributeChangeData& Data);
-	void MaxHealthChanged(const FOnAttributeChangeData& Data);
-	void ManaChanged(const FOnAttributeChangeData& Data);
-	void MaxManaChanged(const FOnAttributeChangeData& Data);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UDataTable> MessageWidgetDataTable;
 	
 	UPROPERTY(BlueprintAssignable)
-	FOnHealthChangeSignature OnHealthChange;
+	FOnAttributeChangeSignature OnHealthChange;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnMaxHealthChangeSignature OnMaxHealthChange;
+	FOnAttributeChangeSignature OnMaxHealthChange;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnManaChangeSignature OnManaChange;
+	FOnAttributeChangeSignature OnManaChange;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnMaxManaChangeSignature OnMaxManaChange;
+	FOnAttributeChangeSignature OnMaxManaChange;
+
+	// Primary Attributes callbacks
+	//
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnStrengthChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnIntelligenceChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnResilienceChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnVigorChange;
+	
+	//
+	// End Primary Attributes callbacks
+
+	// Secondary Attributes callbacks
+	//
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnArmorChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnArmorPenetrationChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnBlockChanceChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnCriticalHitChanceChange;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnCriticalHitResistanceChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnCriticalHitDamageChange;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnHealthRegenerationChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnManaRegenerationChange;
+	
+	//
+	// End Secondary Attributes callbacks
+
+	UPROPERTY(BlueprintAssignable)
+	FOnMessageSignature OnMessage;
 	
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<APlayerController> PlayerController;
@@ -58,5 +134,10 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAttributeSet> AttributeSet;
-	
 };
+
+template <typename T>
+T* UAuraWidgetController::GetTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
+{
+	return DataTable->FindRow<T>(Tag.GetTagName(), TEXT(""));
+}

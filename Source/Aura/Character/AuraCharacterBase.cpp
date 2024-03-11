@@ -3,6 +3,8 @@
 
 #include "AuraCharacterBase.h"
 
+#include "AbilitySystemComponent.h"
+
 AAuraCharacterBase::AAuraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -12,7 +14,17 @@ AAuraCharacterBase::AAuraCharacterBase()
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void AAuraCharacterBase::BeginPlay()
+void AAuraCharacterBase::InitializeAttributes()
 {
-	Super::BeginPlay();
+	ApplyEffectToSelf(InitializePrimaryAttributesEffect);
+	ApplyEffectToSelf(InitializeSecondaryAttributesEffect);
+	ApplyEffectToSelf(InitializeVitalAttributesEffect);
+}
+
+void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Effect, float Level)
+{
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+	FGameplayEffectSpecHandle InitializeEffectSpec = AbilitySystemComponent->MakeOutgoingSpec(Effect, Level, EffectContext);
+	AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*InitializeEffectSpec.Data.Get(), AbilitySystemComponent);
 }
